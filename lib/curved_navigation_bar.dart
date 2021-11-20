@@ -16,6 +16,7 @@ class CurvedNavigationBar extends StatefulWidget {
   final Curve animationCurve;
   final Duration animationDuration;
   final double height;
+  final bool isVertical;
 
   CurvedNavigationBar({
     Key? key,
@@ -27,8 +28,9 @@ class CurvedNavigationBar extends StatefulWidget {
     this.onTap,
     _LetIndexPage? letIndexChange,
     this.animationCurve = Curves.easeOut,
-    this.animationDuration = const Duration(milliseconds: 600),
+    this.animationDuration = const Duration(milliseconds: 100),
     this.height = 75.0,
+    this.isVertical = false,
   })  : letIndexChange = letIndexChange ?? ((_) => true),
         assert(items != null),
         assert(items.length >= 1),
@@ -54,10 +56,18 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
   void initState() {
     super.initState();
     _icon = widget.items[widget.index];
+
     _length = widget.items.length;
+    print("itmecount :: ${_length}");
+
     _pos = widget.index / _length;
+    print("possss :: ${_pos}");
+
     _startingPos = widget.index / _length;
+    print("possss_sstarting :: ${_startingPos}");
+
     _animationController = AnimationController(vsync: this, value: _pos);
+
     _animationController.addListener(() {
       setState(() {
         _pos = _animationController.value;
@@ -104,11 +114,17 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
             bottom: -40 - (75.0 - widget.height),
             left: Directionality.of(context) == TextDirection.rtl
                 ? null
+                : widget.isVertical
+                ? _pos * size.height
                 : _pos * size.width,
             right: Directionality.of(context) == TextDirection.rtl
-                ? _pos * size.width
+                ? widget.isVertical
+                ? _pos * size.height
+                : _pos * size.width
                 : null,
-            width: size.width / _length,
+            width: widget.isVertical
+                ? size.height / _length
+                : size.width / _length,
             child: Center(
               child: Transform.translate(
                 offset: Offset(
@@ -146,14 +162,14 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
                 height: 100.0,
                 child: Row(
                     children: widget.items.map((item) {
-                  return NavButton(
-                    onTap: _buttonTap,
-                    position: _pos,
-                    length: _length,
-                    index: widget.items.indexOf(item),
-                    child: Center(child: item),
-                  );
-                }).toList())),
+                      return NavButton(
+                        onTap: _buttonTap,
+                        position: _pos,
+                        length: _length,
+                        index: widget.items.indexOf(item),
+                        child: Center(child: item),
+                      );
+                    }).toList())),
           ),
         ],
       ),
@@ -171,7 +187,7 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
     if (widget.onTap != null) {
       widget.onTap!(index);
     }
-    final newPosition = index / _length;
+    final newPosition = (index / _length);
     setState(() {
       _startingPos = _pos;
       _endingIndex = index;
@@ -180,3 +196,4 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
     });
   }
 }
+
