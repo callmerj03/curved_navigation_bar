@@ -55,7 +55,6 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
   @override
   void initState() {
     super.initState();
-    _icon = widget.items[widget.index];
 
     _length = widget.items.length;
     print("itmecount :: ${_length}");
@@ -68,18 +67,8 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
 
     _animationController = AnimationController(vsync: this, value: _pos);
 
-    _animationController.addListener(() {
-      setState(() {
-        _pos = _animationController.value;
-        final endingPos = _endingIndex / widget.items.length;
-        final middle = (endingPos + _startingPos) / 2;
-        if ((endingPos - _pos).abs() < (_startingPos - _pos).abs()) {
-          _icon = widget.items[_endingIndex];
-        }
-        _buttonHide =
-            (1 - ((middle - _pos) / (_startingPos - middle)).abs()).abs();
-      });
-    });
+
+
   }
 
   @override
@@ -102,6 +91,23 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
 
   @override
   Widget build(BuildContext context) {
+
+    _icon = widget.items[widget.index];
+
+    _animationController.addListener(() {
+      setState(() {
+        _pos = _animationController.value;
+        final endingPos = _endingIndex / widget.items.length;
+        final middle = (endingPos + _startingPos) / 2;
+        // if ((endingPos - _pos).abs() < (_startingPos - _pos).abs()) {
+          _icon = widget.items[_endingIndex];
+        // }
+        _buttonHide =
+            (1 - ((middle - _pos) / (_startingPos - middle)).abs()).abs();
+      });
+    });
+
+
     Size size = MediaQuery.of(context).size;
     return Container(
       color: widget.backgroundColor,

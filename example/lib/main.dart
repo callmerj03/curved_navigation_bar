@@ -10,52 +10,74 @@ class BottomNavBar extends StatefulWidget {
 
 class _BottomNavBarState extends State<BottomNavBar> {
   int _page = 0;
+
+  Widget cell(IconData icon, bool isVertical) {
+    return RotatedBox(
+        quarterTurns: isVertical ? 1 : 0, child: Icon(icon, size: 30));
+  }
+
   GlobalKey<CurvedNavigationBarState> _bottomNavigationKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        bottomNavigationBar: CurvedNavigationBar(
-          key: _bottomNavigationKey,
-          index: 0,
-          height: 60.0,
-          items: <Widget>[
-            Icon(Icons.add, size: 30),
-            Icon(Icons.list, size: 30),
-            Icon(Icons.compare_arrows, size: 30),
-            Icon(Icons.call_split, size: 30),
-            Icon(Icons.perm_identity, size: 30),
-          ],
-          color: Colors.white,
-          buttonBackgroundColor: Colors.white,
-          backgroundColor: Colors.blueAccent,
-          animationCurve: Curves.easeInOut,
-          animationDuration: Duration(milliseconds: 600),
-          onTap: (index) {
-            setState(() {
-              _page = index;
-            });
-          },
-          letIndexChange: (index) => true,
-        ),
-        body: Container(
+    return Scaffold(body:
+    OrientationBuilder(
+      builder: (BuildContext context, Orientation orientation) {
+        return Container(
           color: Colors.blueAccent,
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Text(_page.toString(), textScaleFactor: 10.0),
-                ElevatedButton(
-                  child: Text('Go To Page of index 1'),
-                  onPressed: () {
-                    final CurvedNavigationBarState? navBarState =
-                        _bottomNavigationKey.currentState;
-                    navBarState?.setPage(1);
-                  },
-                )
-              ],
-            ),
+          child: Stack(
+            children: <Widget>[
+              Center(
+                child: Column(
+                  children: [
+                    Text(_page.toString(), textScaleFactor: 10.0),
+                    ElevatedButton(
+                      child: Text('Go To Page of index 1'),
+                      onPressed: () {
+                        final CurvedNavigationBarState? navBarState =
+                            _bottomNavigationKey.currentState;
+                        navBarState?.setPage(1);
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              Align(
+                alignment: orientation == Orientation.portrait
+                    ? Alignment.bottomCenter
+                    : Alignment.bottomLeft,
+                child: RotatedBox(
+                  quarterTurns: orientation == Orientation.portrait ? 0 : 1,
+                  child: CurvedNavigationBar(
+                    index: _page,
+                    isVertical:orientation == Orientation.portrait ? false :true ,
+                    height: 60.0,
+                    items: <Widget>[
+                      cell(Icons.six__ft_apart_outlined,
+                          orientation == Orientation.landscape ? true : false),
+                      cell(Icons.list, orientation == Orientation.landscape ? true : false),
+                      cell(Icons.compare_arrows, orientation == Orientation.landscape ? true : false),
+                      cell(Icons.call_split, orientation == Orientation.landscape ? true : false),
+                      cell(Icons.perm_identity, orientation == Orientation.landscape ? true : false),
+                    ],
+                    color: Colors.white,
+                    buttonBackgroundColor: Colors.white,
+                    backgroundColor: Colors.blueAccent,
+                    animationCurve: Curves.easeInOut,
+                    animationDuration: Duration(milliseconds: 600),
+                    onTap: (index) {
+                      setState(() {
+                        _page = index;
+                      });
+                    },
+                    letIndexChange: (index) => true,
+                  ),
+                ),
+              ),
+            ],
           ),
-        ));
+        );
+      },
+    ));
   }
 }
